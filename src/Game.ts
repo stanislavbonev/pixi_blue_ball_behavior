@@ -1,6 +1,8 @@
 import { GameObject } from "./GameObject"
 import * as PIXI from 'pixi.js';
 import { BallBehavior } from './BallBehavior';
+import { SquareBehavior } from './SquareBehaviour';
+
 import { Button1 } from './Button1';
 import { Button2 } from './Button2';
 import { GameApplication } from './GameApplication'
@@ -17,7 +19,7 @@ export class Game extends PIXI.Container {
 
     private changeBehaviourBtn: Button1;
     private initBehaviorButton: Button2;
-
+    private square: PIXI.Sprite;
     private ballGameObj: GameObject;
 
     constructor() {
@@ -34,7 +36,10 @@ export class Game extends PIXI.Container {
         this.createGameObject();
 
 
+
     }
+
+
     private createGameObjList() {
         this.gameObjects = new Map<string, GameObject>();
     }
@@ -72,18 +77,39 @@ export class Game extends PIXI.Container {
 
     private createGameObject() {
         this.createBallGameObj();
+        this.createSquareGameObj();
+    }
+
+    private createBallGameObj() {
+        const ballGameObj: GameObject = new GameObject('gameObj1');
+
+        ballGameObj.x = 100;
+        ballGameObj.y = 100;
+
+        this.addGameObject(ballGameObj);
+
+        const ballBehavior: BallBehavior = new BallBehavior(ballGameObj);
+        ballGameObj.addBehavior('ballBehavior', ballBehavior);
 
 
     }
 
-    private createBallGameObj() {
-        // const ballGameObj: GameObject = new GameObject('gameObj1');
-        this.ballGameObj = new GameObject('gameObj1');
+    private createSquareGameObj() {
+        const squareGameObj: GameObject = new GameObject('gameObj2');
 
-        this.gameObjectContainer.addChild(this.ballGameObj);
+        squareGameObj.x = 300;
+        squareGameObj.y = 100;
 
-        this.gameObjects.set('gameObj1', this.ballGameObj);
-        // this.gameObjects.push(ballGameObj);
+        this.addGameObject(squareGameObj);
+
+        const squareBehavior: SquareBehavior = new SquareBehavior(squareGameObj);
+        squareBehavior.setBallObjRef(this.getGameObjById('gameObj1'));////////////
+        squareGameObj.addBehavior('squareBehavior', squareBehavior);
+    }
+
+    private addGameObject(gameObj: GameObject) {
+        this.gameObjectContainer.addChild(gameObj);
+        this.gameObjects.set(gameObj.getId(), gameObj);
     }
 
     private update(delta: number) {
@@ -91,15 +117,37 @@ export class Game extends PIXI.Container {
             gameObj.update(delta);
 
         })
+
+    }
+
+    // private onInitButtonUp() {
+    //     console.log('safafafaf')
+    //     const ballBehavior: BallBehavior = new BallBehavior(this.ballGameObj);
+    //     this.ballGameObj.addBehavior(ballBehavior);
+    // }
+
+
+    private getGameObjById(id: string): GameObject {
+        if (!this.gameObjects.has(id)) {
+            return null;
+        }
+        return this.gameObjects.get(id);
     }
 
     private onInitButtonUp() {
-        console.log('safafafaf')
-        const ballBehavior: BallBehavior = new BallBehavior(this.ballGameObj);
-        this.ballGameObj.addBehavior(ballBehavior);
+        // const gameObj: GameObject = this.getGameObjById('gameObj1');
+
+        // if (!gameObj) {
+        //     console.log('no object');
+        //     return;
+        // }
+
+        // const squareBehavior: SquareBehavior = new SquareBehavior(gameObj);
+        // gameObj.addBehavior('squareBehavior', squareBehavior);
     }
 
     private onChangeButtonUp() {
-        console.log('safafafaf')
+
+
     }
 }

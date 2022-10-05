@@ -2,12 +2,16 @@ import { GameObject } from './GameObject'
 
 export class GameObjectBehavior {
 
-    protected gameObjectRef: GameObject;
+    protected gameObjRef: GameObject;
 
-    constructor(gameObjectRef: GameObject) {
-        this.gameObjectRef = gameObjectRef;
+    constructor(gameObjRef: GameObject) {
+        this.gameObjRef = gameObjRef;
 
         this.init();
+
+    }
+
+    public destroy() { //all classes should have destroy function
 
     }
 

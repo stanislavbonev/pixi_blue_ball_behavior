@@ -2,13 +2,18 @@ import { GameObjectBehavior } from "./GameObjectBehavior"
 import * as PIXI from 'pixi.js';
 export class GameObject extends PIXI.Container {
 
-    private behaviors: Array<GameObjectBehavior> = [];
+
 
     private id: string;
-
+    private behaviors: Map<string, GameObjectBehavior>;
     constructor(id: string) {
         super();
         this.id = id;
+        this.init();
+    }
+
+    private init() {
+        this.behaviors = new Map<string, GameObjectBehavior>(); /// new parentesis
     }
 
     public getId(): string {
@@ -21,7 +26,16 @@ export class GameObject extends PIXI.Container {
         })
     }
 
-    public addBehavior(behaviour: GameObjectBehavior) {
-        this.behaviors.push(behaviour);
+    public addBehavior(id: string, behaviour: GameObjectBehavior) {
+        this.behaviors.set(id, behaviour);
+    }
+
+    public removeBehavior(id: string) {
+        if (!this.behaviors.has(id)) {
+            return;
+        }
+
+        this.behaviors.get(id).destroy();
+        this.behaviors.delete(id);
     }
 }
