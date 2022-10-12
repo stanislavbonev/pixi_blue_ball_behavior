@@ -1,12 +1,17 @@
 import { GameObjectBehavior } from './GameObjectBehavior'
 import { GameObject } from './GameObject';
 import * as PIXI from 'pixi.js';
-import { GameApplication } from './GameApplication'
+import { GameApplication } from './GameApplication';
+import { EventDispatcher } from './EventDispatcher';
+import { BallBehavior } from './BallBehavior';
+import { BlueBallBehavior } from './BlueBallBehavior';
+
 
 export class SquareBehavior extends GameObjectBehavior {
 
     private square: PIXI.Sprite;
-    private velocity: number = 5;
+    private velocity: number = 10;
+    private deAccel: number = 0.1099;
     private ballObjRef: GameObject;
     private collision: boolean = false;
 
@@ -38,14 +43,33 @@ export class SquareBehavior extends GameObjectBehavior {
 
         this.gameObjRef.addChild(this.square);
     }
-    ///////////////////////////////////////////////
-    private move(obj: GameObject) {
 
-        if (obj.x + obj.width < GameApplication.getApp().view.width) {
-            obj.x += this.velocity;
-        }
-        else {
-            return;
+
+
+    ///////////////////////////////////////////////
+    private move(obj: GameObject, delta: number) {
+
+        if (obj.x < GameApplication.getApp().view.width) {
+
+            this.velocity -= this.deAccel;
+            obj.x += this.velocity * delta;
+
+            if (this.velocity < 0) {
+                this.velocity = 10;
+                this.collision = false;
+
+            } else
+                if (obj.x + obj.width > GameApplication.getApp().view.width) {
+
+                    obj.removeBehavior('squareBehavior');
+
+                    const BlueballBehavior: BlueBallBehavior = new BlueBallBehavior(obj);
+                    obj.addBehavior('squareBehavior', BlueballBehavior);
+                    obj.x = GameApplication.getApp().view.width - obj.width;
+
+                    console.log(obj);
+                }
+
         }
 
     }
@@ -57,15 +81,15 @@ export class SquareBehavior extends GameObjectBehavior {
         if (!this.collision && this.ballObjRef.x + this.ballObjRef.width >= this.gameObjRef.x && this.ballObjRef.x < this.gameObjRef.x + this.gameObjRef.width &&
             this.ballObjRef.y + this.ballObjRef.height >= this.gameObjRef.y && this.ballObjRef.y < this.gameObjRef.y + this.gameObjRef.height) {
 
-            // this.ballObjRef.destroy(); //!!!!!!!!!
             this.collision = true;
-            // this.gameObjRef.width *= 0.9;
+
+            EventDispatcher.getInstance().getDispatcher().emit('updatescore');
 
         }
         if (this.collision) {
 
-            this.move(this.gameObjRef);
-
+            this.ballObjRef.removeBehavior('ballBehavior');
+            this.move(this.gameObjRef, delta);
 
         }
 

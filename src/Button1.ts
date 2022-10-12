@@ -1,5 +1,6 @@
 import { Button } from './Button';
-
+import { Game } from './Game';
+import { EventDispatcher } from './EventDispatcher';
 
 export class Button1 extends Button {
 
@@ -15,13 +16,13 @@ export class Button1 extends Button {
     protected onPointerup() {
         super.onPointerup();
 
-        this.dispatcher.emit('changebtnup');
+        EventDispatcher.getInstance().getDispatcher().emit('changebtnup');
     }
 
     protected onPointerDown() {
         super.onPointerDown();
 
-        this.dispatcher.emit('changebtndown');
+        EventDispatcher.getInstance().getDispatcher().emit('changebtndown');
     }
 
 }
